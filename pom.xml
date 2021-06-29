@@ -13,8 +13,6 @@
 
     <properties>
         <java.version>1.7</java.version>
-        <timestamp>${maven.build.timestamp}</timestamp>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     </properties>
     
     <dependencies>
@@ -36,60 +34,10 @@
         </dependency>
     </dependencies>
     <build>
-        <resources>
-            <resource>
-              <directory>src/main/resources</directory>
-              <filtering>true</filtering>
-              <includes>
-                <include>**/version.txt</include>
-              </includes>
-            </resource>
-            <resource>
-              <directory>src/main/resources</directory>
-              <filtering>false</filtering>
-              <excludes>
-                <exclude>**/version.txt</exclude>
-              </excludes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <archive>                   
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-              <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                <execution>
-                <phase>prepare-package</phase>
-                <configuration>
-                   <tasks>
-                     <tstamp>
-                    <format property="now" pattern="yyyy-MM-dd hh:mm:ss" locale="it" />
-                      </tstamp>
-                        <echo file="<path>/version.txt" append="false">
-                        Project Version : ${project.version} ${line.separator}Build @ ${now}
-                        </echo>
-                        </tasks>
-                     </configuration>
-                    <goals>
-                    <goal>run</goal>
-                    </goals>
-                </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

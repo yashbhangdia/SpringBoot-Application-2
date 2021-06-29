@@ -13,6 +13,9 @@
 
     <properties>
         <java.version>1.7</java.version>
+    </properties>
+    
+    <properties>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     </properties>
@@ -36,17 +39,17 @@
         </dependency>
     </dependencies>
     <build>
-        <resources>
-           <resource>
-              <directory>src/main/resources</directory>
-              <filtering>true</filtering>
-           </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <resources>
+           <resource>
+              <directory>src/main/resources</directory>
+              <filtering>true</filtering>
+           </resource>
+        </resources>
     </build>
 </project>

@@ -69,6 +69,28 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                <execution>
+                <phase>prepare-package</phase>
+                <configuration>
+                   <tasks>
+                     <tstamp>
+                    <format property="now" pattern="yyyy-MM-dd hh:mm:ss" locale="it" />
+                      </tstamp>
+                        <echo file="<path>/version.txt" append="false">
+                        Project Version : ${project.version} ${line.separator}Build @ ${now}
+                        </echo>
+                        </tasks>
+                     </configuration>
+                    <goals>
+                    <goal>run</goal>
+                    </goals>
+                </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -1,0 +1,53 @@
+def remote = [:]
+[remote.name](http://remote.name/) = "jenkins"
+remote.host = "192.168.50.50"
+remote.allowAnyHosts = true
+
+node {
+
+    stage ("Git Check Out") {
+        git changelog: false, credentialsId: 'GIT_HUB_CREDENTIALS', poll: false, url: '<https://github.com/yashbhangdia/spring-boot-maven-example-helloworld.git>'
+    }
+
+    stage ("Build") {
+      bat label: '', script: 'mvn package'
+    }
+
+    stage('Testing'){
+
+    }
+
+	stage("Deploy SpringBoot App!") {
+		  withCredentials([sshUserPrivateKey(credentialsId: '5c832d8a-57a6-405f-a1be-7eb0b12d517d', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'jenkins')]) {
+			  remote.user = jenkins
+			  remote.identityFile = identity
+
+			  sshCommand remote: remote, command: 'mkdir deployment', failOnError:'false'
+			  sshCommand remote : remote, command: 'cd /home/jenkins/deployment; PID=`ps -eaf | grep "java -jar" | grep -v grep | awk "{print $2}"`; if [[ "" !=  "$PID" ]]; then echo "found $PID and killing it!!" ; kill -9 $PID; fi'
+			  sshCommand remote: remote, command: 'rm /home/jenkins/deployment/*.war', failOnError:'false'
+			  sshPut remote: remote, from: 'target/Application.war', into: '/home/jenkins/deployment/'
+			  sshCommand remote: remote, command: 'cd /home/jenkins/deployment; nohup java -jar Application.war >> app.log &'
+		  }
+
+  }
+
+  stage('Post Deploy'){
+
+    //   $dir = "info"
+      bat 'IF EXIST info RMDIR /S /Q info'
+      bat 'mkdir info'
+
+      withCredentials([sshUserPrivateKey(credentialsId: '5c832d8a-57a6-405f-a1be-7eb0b12d517d', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'jenkins')]) {
+			  remote.user = jenkins
+			  remote.identityFile = identity
+
+			  sshCommand remote: remote, command: 'rm -R temp', failOnError:'false'
+			  sshCommand remote: remote, command: 'cd /home/jenkins/deployment; mkdir temp; cd temp; jar xvf ../Application.war'
+			  sshCommand remote: remote, command: 'cd /home/jenkins/deployment/temp/META-INF/maven/org.springframework.boot/SpringBootMavenExample; ls'
+			  sshGet remote: remote, from:'deployment/temp/META-INF/maven/org.springframework.boot/SpringBootMavenExample/pom.properties', into: 'info/vm1.txt', override: true
+			  sshCommand remote: remote, command: 'rm -R temp', failOnError:'false'
+      }
+
+  }
+
+}

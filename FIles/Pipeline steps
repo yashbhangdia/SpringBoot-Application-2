@@ -1,18 +1,16 @@
 def remote = []
 
-def temp = [:]
-temp.name = "jenkins"
-temp.id = '5c832d8a-57a6-405f-a1be-7eb0b12d517d'
-temp.host = "192.168.50.50"
-temp.allowAnyHosts = true
-remote.add(temp)
+data = [["jenkins", "5c832d8a-57a6-405f-a1be-7eb0b12d517d", "192.168.50.50"], ["jenkins02", "Jenkins_2", "192.168.51.51"]]
 
-def temp1 = [:]
-temp1.name = "jenkins02"
-temp1.id = 'Jenkins_2'
-temp1.host = "192.168.51.51"
-temp1.allowAnyHosts = true
-remote.add(temp1)
+for(int i=0;i<2;i++)
+{
+    def temp = [:]
+    temp.name = data[i][0]
+    temp.id = data[i][1]
+    temp.host = data[i][2]
+    temp.allowAnyHosts = true
+    remote.add(temp)
+}
 
 
 node {
@@ -33,9 +31,9 @@ node {
 	    
 	    remote.each{
 	        item -> L:{
+	            echo "Deploying to : ${item.name}"
 
 	            withCredentials([sshUserPrivateKey(credentialsId: item.id, keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: item.name)]) {
-	              echo "Hello"
     			  item.user = item.name
     			  item.identityFile = identity
                   
